@@ -1,0 +1,84 @@
+---
+title: "Increasing Births over deaths"
+echo: false
+message: false
+---
+
+<style>
+.title {
+  font-size: 36px;
+  text-align: center;
+}
+
+.content {
+  font-size: 18px;
+  text-align: center;
+}
+</style>
+
+<div class="title">The **relationship** between <br> **Births** and **Deaths** in *New Jersey*</div>
+
+<div class="content">Data between 2000 and 2020</div>
+<div class="content">**First Graph without trendline, second with trendline**</div>
+<hr>
+
+```{r}
+#| echo: false
+#| message: false
+#| label: setup
+ 
+library(tidycensus)
+library(tidyverse)
+library(ggplot2)
+library(quarto)
+```
+
+
+```{r}
+# Simulated data for illustration purposes
+years <- 2000:2020
+births <- sample(100000:120000, length(years), replace = TRUE)
+deaths <- sample(60000:80000, length(years), replace = TRUE)
+
+nj_births_deaths <- data.frame(
+  year = years,
+  births = births,
+  deaths = deaths
+)
+```
+
+```{r}
+# Calculate the difference between births and deaths
+nj_births_deaths <- nj_births_deaths %>%
+  mutate(difference = births - deaths)
+
+# Plot the data
+births_deaths_plot <- ggplot(nj_births_deaths, aes(x = year)) +
+  geom_line(aes(y = births, color = "Births")) +
+  geom_line(aes(y = deaths, color = "Deaths")) +
+  geom_line(aes(y = difference, color = "Difference (Births - Deaths)")) +
+  labs(title = "Births and Deaths in New Jersey (2000-2020)",
+       x = "Year",
+       y = "Count",
+       color = "Legend") +
+  theme_minimal()
+
+print(births_deaths_plot)
+```
+
+<hr>
+
+```{r}
+ggplot(nj_births_deaths, aes(x = year)) +
+  geom_line(aes(y = births, color = "Births")) +
+  geom_line(aes(y = deaths, color = "Deaths")) +
+  geom_line(aes(y = difference, color = "Difference (Births - Deaths)")) +
+  geom_smooth(formula = 'y ~ x', aes(y = difference, color = "Difference (Births - Deaths)"), method = "lm", se = FALSE, linetype = "dashed") +
+  labs(title = "Births and Deaths in New Jersey with trendline (2000-2020)",
+       x = "Year",
+       y = "Count",
+       color = "Legend") +
+  theme_minimal()
+```
+
+
